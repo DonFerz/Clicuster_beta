@@ -3,11 +3,15 @@ from logging.config import fileConfig
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from alembic import context
+from dotenv import load_dotenv
+
+# Импорт ваших моделей (убедитесь, что путь правильный)
 from Clicuster_beta.clicuster_project.app.models import Base
 
-def get_url():
-    return os.getenv("DATABASE_URL", "postgresql://postgres:Nad5555n.@localhost:5432/Clicuster_db")
+# Загружаем переменные из .env
+load_dotenv()
 
+# Настройка Alembic
 config = context.config
 
 if config.config_file_name is not None:
@@ -15,10 +19,20 @@ if config.config_file_name is not None:
 
 target_metadata = Base.metadata
 
+# Функция получения URL базы данных из переменной окружения (без хардкода!)
+def get_database_url() -> str:
+    url = os.getenv("DATABASE_URL")
+    if not url:
+        raise ValueError(
+            "Переменная окружения DATABASE_URL не задана. "
+            "Создайте файл .env и укажите в нём DATABASE_URL=..."
+        )
+    return url
+
 def run_migrations_offline() -> None:
-    url = get_url()
+    """Запуск миграций в офлайн-режиме (без подключения к БД)."""
     context.configure(
-        url=url,
+        url=get_database_url(),
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
@@ -27,8 +41,11 @@ def run_migrations_offline() -> None:
         context.run_migrations()
 
 def run_migrations_online() -> None:
+    """Запуск миграций в онлайн-режиме (с подключением к БД)."""
+    # Берём настройки из alembic.ini и подставляем наш URL
     configuration = config.get_section(config.config_ini_section, {})
-    configuration["sqlalchemy.url"] = get_url()
+    configuration["sqlalchemy.url"] = get_database_url()
+
     connectable = engine_from_config(
         configuration,
         prefix="sqlalchemy.",
@@ -36,11 +53,13 @@ def run_migrations_online() -> None:
     )
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata
+            connection=connection,
+            target_metadata=target_metadata,
         )
         with context.begin_transaction():
             context.run_migrations()
 
+# Определяем режим запуска
 if context.is_offline_mode():
     run_migrations_offline()
 else:
