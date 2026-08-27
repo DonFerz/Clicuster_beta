@@ -5,13 +5,12 @@ from sqlalchemy import pool
 from alembic import context
 from dotenv import load_dotenv
 
-# Импорт ваших моделей (убедитесь, что путь правильный)
+
 from Clicuster_beta.clicuster_project.app.models import Base
 
-# Загружаем переменные из .env
+
 load_dotenv()
 
-# Настройка Alembic
 config = context.config
 
 if config.config_file_name is not None:
@@ -19,7 +18,7 @@ if config.config_file_name is not None:
 
 target_metadata = Base.metadata
 
-# Функция получения URL базы данных из переменной окружения (без хардкода!)
+# Функция получения URL базы данных
 def get_database_url() -> str:
     url = os.getenv("DATABASE_URL")
     if not url:
@@ -42,7 +41,6 @@ def run_migrations_offline() -> None:
 
 def run_migrations_online() -> None:
     """Запуск миграций в онлайн-режиме (с подключением к БД)."""
-    # Берём настройки из alembic.ini и подставляем наш URL
     configuration = config.get_section(config.config_ini_section, {})
     configuration["sqlalchemy.url"] = get_database_url()
 
@@ -59,7 +57,7 @@ def run_migrations_online() -> None:
         with context.begin_transaction():
             context.run_migrations()
 
-# Определяем режим запуска
+
 if context.is_offline_mode():
     run_migrations_offline()
 else:
