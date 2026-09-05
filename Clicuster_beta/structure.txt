@@ -1,0 +1,96 @@
+clicuster_project/
+├── docker-compose.yml
+├── Dockerfile
+├── .env.example
+├── .gitignore
+├── alembic.ini
+├── migrations/
+│   └── versions/               # автоматические миграции Alembic
+├── requirements.txt        # зависимости
+├── requirements-dev.txt    # зависимости для разработки
+├── app/
+│   ├── __init__.py
+│   ├── main.py                 # точка входа FastAPI
+│   ├── config.py               # настройки (Pydantic Settings)
+│   ├── database.py             # асинхронный движок SQLAlchemy + сессии
+│   ├── redis_client.py         # подключение к Redis (для кеша + очередей)
+│   ├── models/                 # SQLAlchemy ORM-модели
+│   │   ├── __init__.py
+│   │   ├── user.py             # пользователи (владельцы, мастера, клиенты)
+│   │   ├── salon.py            # салоны / студии
+│   │   ├── master.py           # мастера (сотрудники)
+│   │   ├── service.py          # услуги (название, цена, длительность)
+│   │   ├── appointment.py      # записи клиентов
+│   │   ├── schedule.py         # расписание мастера (рабочие часы, перерывы)
+│   │   └── ...
+│   ├── schemas/                # Pydantic-схемы (вход/выход)
+│   │   ├── __init__.py
+│   │   ├── auth.py
+│   │   ├── user.py
+│   │   ├── salon.py
+│   │   ├── master.py
+│   │   ├── service.py
+│   │   ├── appointment.py
+│   │   └── ...
+│   ├── crud/                   # операции работы с БД (низкоуровневые)
+│   │   ├── __init__.py
+│   │   ├── user.py
+│   │   ├── salon.py
+│   │   ├── appointment.py
+│   │   └── ...
+│   ├── core/                   # бизнес-логика (сервисный слой)
+│   │   ├── __init__.py
+│   │   ├── auth.py             # регистрация, логин, выдача JWT
+│   │   ├── security.py         # хэширование паролей, проверка прав
+│   │   ├── appointments.py     # проверка доступности, создание записи
+│   │   ├── scheduling.py       # расчёт свободных окон, управление расписанием
+│   │   ├── notifications.py    # отправка уведомлений (email/SMS)
+│   │   ├── exceptions.py       # кастомные классы ошибок
+│   │   └── interfaces/         # для абстракций
+│   ├── api/                    # эндпоинты (роутеры)
+│   │   ├── __init__.py
+│   │   └── v1/                 # версионирование API
+│   │       ├── __init__.py
+│   │       ├── router.py       # сборка всех роутеров версии v1
+│   │       └── endpoints/
+│   │           ├── auth.py
+│   │           ├── users.py
+│   │           ├── salons.py
+│   │           ├── masters.py
+│   │           ├── services.py
+│   │           ├── appointments.py
+│   │           └── health.py
+│   ├── dependencies/           # зависимости для FastAPI (Depends)
+│   │   ├── __init__.py
+│   │   ├── db.py               # получение сессии БД
+│   │   ├── auth.py             # получение текущего пользователя по токену
+│   │   └── redis.py            # получение клиента Redis
+│   ├── middleware/             # кастомные middleware
+│   │   ├── __init__.py
+│   │   ├── cors.py             # CORS
+│   │   └── logging.py          # логирование запросов
+│   ├── utils/                  # вспомогательные утилиты
+│   │   ├── __init__.py
+│   │   ├── email.py            # отправка писем (SMTP)
+│   │   ├── sms.py              # отправка SMS (через внешний API)
+│   │   ├── cache.py            # декораторы для кеширования в Redis
+│   │   ├── timezone.py         # работа с часовыми поясами
+│   │   └── exception_handlers.py # глобальный хендлер
+│   ├── tasks/                  # фоновые задачи (через Redis + RQ / ARQ)
+│   │   ├── __init__.py
+│   │   ├── worker.py           # настройка воркера
+│   │   └── jobs.py             # сами задачи (напоминания, очистка и т.п.)
+│   └── tests/                  # тесты (pytest)
+│       ├── __init__.py
+│       ├── conftest.py         # фикстуры для БД, клиента
+│       ├── test_api/
+│       │   ├── test_auth.py
+│       │   └── ...
+│       ├── test_core/
+│       ├── integration/
+│       └── factories/
+├── scripts/                    # одноразовые скрипты (инициализация, сиды)
+│   ├── seed_db.py
+│   └── ...
+├── .env                        # переменные окружения (не коммитится)
+└── README.md
