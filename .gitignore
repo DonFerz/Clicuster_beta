@@ -1,2 +1,11 @@
 .env
 alembic.ini
+
+# Виртуальное окружение
+venv/
+.venv/
+
+# Кэш Python
+__pycache__/
+*.pyc
+*.pyo
