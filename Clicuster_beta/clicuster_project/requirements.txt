@@ -17,10 +17,7 @@ email-validator==2.2.0
 
 # Redis & Queues
 redis==5.2.1
-arq==0.26.1              # вместо RQ – асинхронная очередь на Redis (современнее)
-# Если хотите классический RQ, замените на:
-# rq==1.16.2
-# rq-dashboard==0.9.1   # опционально
+arq==0.26.1
 
 # Email (для уведомлений)
 aiosmtplib==4.0.1
@@ -29,4 +26,4 @@ aiosmtplib==4.0.1
 httpx==0.28.1
 
 # Утилиты
-python-multipart==0.0.20  # для обработки form-data (если понадобится)
+python-multipart==0.0.20  # для обработки form-data 
