@@ -64,6 +64,7 @@ clicuster_project/
 │   │   ├── __init__.py
 │   │   ├── db.py               # получение сессии БД
 │   │   ├── auth.py             # получение текущего пользователя по токену
+│   │   ├── pagination.py       # вывод списка мастеров и услуг
 │   │   └── redis.py            # получение клиента Redis
 │   ├── middleware/             # кастомные middleware
 │   │   ├── __init__.py
