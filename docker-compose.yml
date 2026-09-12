@@ -1,8 +1,63 @@
 services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: clicuster_api
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./app:/app/app
+      - ./alembic:/app/alembic
+      - ./alembic.ini:/app/alembic.ini
+      - ./scripts:/app/scripts
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    networks:
+      - clicuster_net
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: clicuster_worker
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./app:/app/app
+      - ./alembic.ini:/app/alembic.ini
+    # Воркер очередей (RQ). Если используешь ARQ — замени на:
+    # command: arq app.tasks.worker.WorkerSettings
+    command: python -m app.tasks.worker
+    networks:
+      - clicuster_net
+
   postgres:
     image: postgres:18-alpine
     container_name: clicuster_db
     restart: always
+    env_file: .env
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -10,12 +65,16 @@ services:
     ports:
       - "5432:5432"
     volumes:
+      # Для postgres:18+ каталог данных — /var/lib/postgresql (см. официальный образ)
       - postgres_data:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 10s
+    networks:
+      - clicuster_net
 
   redis:
     image: redis:7.2-alpine
@@ -27,11 +86,18 @@ services:
       - redis_data:/data
     command: redis-server --appendonly yes
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: [ "CMD", "redis-cli", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 5s
+    networks:
+      - clicuster_net
 
 volumes:
   postgres_data:
   redis_data:
+
+networks:
+  clicuster_net:
+    driver: bridge
