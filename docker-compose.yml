@@ -47,8 +47,6 @@ services:
     volumes:
       - ./app:/app/app
       - ./alembic.ini:/app/alembic.ini
-    # Воркер очередей (RQ). Если используешь ARQ — замени на:
-    # command: arq app.tasks.worker.WorkerSettings
     command: python -m app.tasks.worker
     networks:
       - clicuster_net
@@ -65,7 +63,6 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      # Для postgres:18+ каталог данных — /var/lib/postgresql (см. официальный образ)
       - postgres_data:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]

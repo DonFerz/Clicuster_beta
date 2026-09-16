@@ -13,7 +13,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Зависимости в виртуальное окружение внутри builder
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
@@ -32,16 +31,13 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-# Только runtime-библиотеки для psycopg/asyncpg
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq5 \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Копируем готовый venv из builder
 COPY --from=builder /opt/venv /opt/venv
 
-# Код приложения
 COPY . .
 
 EXPOSE 8000
