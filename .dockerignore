@@ -1,23 +1,45 @@
+# Git
 .git
 .gitignore
-.venv
-venv
-env
-__pycache__
+
+# Виртуальные окружения Python
+.venv/
+venv/
+env/
+
+# Python-мусор
+__pycache__/
 *.pyc
 *.pyo
 *.pyd
-.pytest_cache
-.mypy_cache
-.ruff_cache
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 .coverage
 htmlcov/
+
+# секретная информация
+env
 .env
 .env.*
 !.env.example
-*.md
-*.log
+
+# Docker-файлы
 Dockerfile
 docker-compose*.yml
 .dockerignore
+
+# IDE и ОС
+.idea/
+.vscode/
+.DS_Store
+*.swp
+
+# Документация, логи и лицензия
+*.md
+*.log
+LICENSE
+
+# встроенный claude
 .claude
