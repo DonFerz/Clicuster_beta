@@ -1,10 +1,13 @@
 from datetime import datetime
-from typing import Optional
+from typing import Literal, Optional
+
 from pydantic import BaseModel, ConfigDict, Field
-from app.models.enums import RecordStatus
+
 from app.schemas.client import ClientRead
 from app.schemas.master import MasterRead
 from app.schemas.service import ServiceRead
+
+AppointmentStatus = Literal["pending", "confirmed", "completed", "cancelled"]
 
 
 class RecordBase(BaseModel):
@@ -25,13 +28,13 @@ class RecordUpdate(BaseModel):
     end_time: Optional[datetime] = None
     master_id: Optional[int] = None
     service_id: Optional[int] = None
-    status: Optional[RecordStatus] = None
+    status: Optional[AppointmentStatus] = None
     comment: Optional[str] = Field(None, max_length=500)
 
 
 class RecordRead(RecordBase):
     id: int
-    status: RecordStatus
+    status: AppointmentStatus
     created_at: datetime
     updated_at: Optional[datetime] = None
 
