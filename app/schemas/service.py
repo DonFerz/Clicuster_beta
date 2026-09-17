@@ -1,28 +1,30 @@
-from pydantic import BaseModel
 from datetime import datetime
 from typing import Optional
-from pydantic import ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class ServiceBase(BaseModel):
-    service_id: int
-    client_id: int
-    master_id: int
+    name: str = Field(..., min_length=1, max_length=255)
+    description: Optional[str] = Field(None, max_length=500)
+    price: int = Field(..., ge=0, description="Цена в копейках/центах")
+    duration_minutes: int = Field(..., gt=0)
+    salon_id: int
 
 
 class ServiceCreate(ServiceBase):
-    pass  # уже содержит все необходимые поля
+    pass
 
 
 class ServiceUpdate(BaseModel):
+    name: Optional[str] = Field(None, min_length=1, max_length=255)
+    description: Optional[str] = Field(None, max_length=500)
+    price: Optional[int] = Field(None, ge=0)
+    duration_minutes: Optional[int] = Field(None, gt=0)
     is_active: Optional[bool] = None
 
 
 class ServiceRead(ServiceBase):
     id: int
-    service_name: Optional[str] = None
-    service_price: Optional[int] = None
-    service_time: Optional[int] = None
     is_active: bool
     created_at: datetime
     updated_at: Optional[datetime] = None

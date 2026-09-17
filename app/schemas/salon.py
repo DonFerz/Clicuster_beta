@@ -1,25 +1,24 @@
-from pydantic import BaseModel
-from app.models.enums import SalonType
 from datetime import datetime
 from typing import Optional
-from pydantic import ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
+from app.models.enums import SalonType
 
 
 class SalonBase(BaseModel):
-    name: str
-    address: Optional[str] = None
-    phone: Optional[str] = None
+    name: str = Field(..., min_length=1, max_length=255)
+    address: Optional[str] = Field(None, max_length=500)
+    phone: Optional[str] = Field(None, max_length=20)
     type: SalonType
 
 
 class SalonCreate(SalonBase):
-    owner_id: int  # ID пользователя-администратора
+    owner_id: int
 
 
 class SalonUpdate(BaseModel):
-    name: Optional[str] = None
-    address: Optional[str] = None
-    phone: Optional[str] = None
+    name: Optional[str] = Field(None, min_length=1, max_length=255)
+    address: Optional[str] = Field(None, max_length=500)
+    phone: Optional[str] = Field(None, max_length=20)
     type: Optional[SalonType] = None
     is_active: Optional[bool] = None
 

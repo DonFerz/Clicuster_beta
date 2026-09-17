@@ -1,29 +1,27 @@
 from datetime import datetime
 from typing import Optional
-
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
-
 from app.models.enums import UserRole
 
 
-class UserBase(BaseModel):
+class ClientBase(BaseModel):
     full_name: str = Field(..., min_length=1, max_length=255)
     email: EmailStr
     phone: str = Field(..., min_length=5, max_length=20)
 
 
-class UserCreate(UserBase):
+class ClientCreate(ClientBase):
     password: str = Field(..., min_length=8, max_length=128)
 
 
-class UserUpdate(BaseModel):
+class ClientUpdate(BaseModel):
     full_name: Optional[str] = Field(None, min_length=1, max_length=255)
     email: Optional[EmailStr] = None
     phone: Optional[str] = Field(None, min_length=5, max_length=20)
     is_active: Optional[bool] = None
 
 
-class UserRead(UserBase):
+class ClientRead(ClientBase):
     id: int
     role: UserRole
     is_active: bool
